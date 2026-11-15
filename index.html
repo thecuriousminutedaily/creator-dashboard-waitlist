@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creator Dashboard · early access</title>
+<meta name="description" content="A glass desktop dashboard for YouTube and Instagram creators: subscribers per video, trends in your niche, and how close you are to monetisation. Opens the moment your laptop starts.">
+<meta property="og:title" content="Creator Dashboard: your channel at a glance">
+<meta property="og:description" content="Subscribers per video, trends in your niche, monetisation progress. Join the waitlist.">
+<meta property="og:image" content="img/dashboard.webp">
+<meta name="theme-color" content="#121418">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root {
+  --bg: #0f1114; --ink: #f1f2f4; --ink-2: #b3b7bf; --ink-3: #80848c;
+  --glass: rgba(255,255,255,.05); --glass-2: rgba(255,255,255,.08); --line: rgba(255,255,255,.10);
+  --green: #3d8a66; --green-hi: #6fd1a1; --gold: #e8bd55; --cta: #f6f6f4; --cta-ink: #121418;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+.blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.blobs span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; }
+.blobs span:nth-child(1) { width: 520px; height: 520px; left: -180px; top: -160px; background: #5a3a28; }
+.blobs span:nth-child(2) { width: 480px; height: 480px; right: -160px; top: 30%; background: #1f4a39; }
+.blobs span:nth-child(3) { width: 420px; height: 420px; left: 20%; bottom: -220px; background: #352d55; }
+a { color: inherit; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.glass { background: var(--glass); border: 1px solid var(--line); border-radius: 22px;
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%); }
+
+/* nav */
+nav { position: sticky; top: 0; z-index: 5; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: rgba(15,17,20,.6); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; gap: 10px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; }
+.brand img { width: 32px; height: 32px; }
+.brand small { display: block; font-size: 11px; font-weight: 600; color: var(--ink-3); line-height: 1; }
+nav .spacer { flex: 1; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; font-size: 15px; text-decoration: none;
+  padding: 12px 20px; border-radius: 999px; border: 0; cursor: pointer; background: var(--cta); color: var(--cta-ink);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35); transition: transform .15s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: none; }
+.btn.small { padding: 8px 14px; font-size: 13.5px; box-shadow: none; }
+.btn.ghost { background: var(--glass-2); color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+
+/* hero */
+.hero { padding: 64px 0 28px; text-align: center; }
+.eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; color: var(--green-hi);
+  background: rgba(61,138,102,.16); border: 1px solid rgba(111,209,161,.25); padding: 6px 12px; border-radius: 999px; }
+.hero h1 { font-size: clamp(32px, 6vw, 58px); line-height: 1.06; letter-spacing: -.025em; margin: 18px auto 14px; max-width: 900px; }
+.hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--green-hi), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.lead { font-size: clamp(16px, 2.2vw, 19px); color: var(--ink-2); max-width: 640px; margin: 0 auto 26px; }
+.cta-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.fine { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
+.shot { margin: 40px auto 0; padding: 10px; border-radius: 26px; max-width: 1080px; }
+.shot { position: relative; }
+.shot img { width: 100%; display: block; border-radius: 18px; }
+.demo { position: absolute; z-index: 1; font-size: 11.5px; font-weight: 700; letter-spacing: .03em; color: var(--ink);
+  background: rgba(15,17,20,.78); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+.shot .demo { right: 22px; bottom: 22px; }
+.feat .pic { position: relative; }
+.feat .pic .demo { right: 10px; bottom: 10px; }
+
+/* proof */
+.proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 34px 0 10px; }
+.proof div { padding: 18px; text-align: center; }
+.proof b { display: block; font-size: 30px; letter-spacing: -.02em; }
+.proof b.g { color: var(--green-hi); } .proof b.y { color: var(--gold); }
+.proof span { font-size: 13.5px; color: var(--ink-2); }
+
+/* features */
+section { padding: 56px 0 0; }
+h2 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -.02em; line-height: 1.15; text-align: center; }
+.sub { text-align: center; color: var(--ink-2); max-width: 620px; margin: 10px auto 0; }
+.feat { display: grid; grid-template-columns: 1fr 1.25fr; gap: 26px; align-items: center; margin-top: 34px; padding: 22px; }
+.feat:nth-of-type(even) { grid-template-columns: 1.25fr 1fr; }
+.feat:nth-of-type(even) .copy { order: 2; }
+.feat h3 { font-size: 22px; letter-spacing: -.01em; margin: 8px 0; }
+.feat p { color: var(--ink-2); }
+.feat ul { margin: 12px 0 0; padding-left: 18px; color: var(--ink-2); }
+.feat li { margin: 4px 0; }
+.feat img { width: 100%; border-radius: 14px; display: block; border: 1px solid var(--line); }
+.tag { font-size: 12px; font-weight: 700; color: var(--gold); letter-spacing: .04em; text-transform: uppercase; }
+.mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
+.mini div { padding: 18px; }
+.mini b { display: block; font-size: 15px; margin: 6px 0 4px; }
+.mini p { font-size: 13.5px; color: var(--ink-2); }
+.mini .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(61,138,102,.18); color: var(--green-hi); }
+
+/* steps + faq */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; counter-reset: s; }
+.steps div { padding: 20px; }
+.steps div::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--cta); color: var(--cta-ink); font-weight: 800; margin-bottom: 10px; }
+.steps b { display: block; margin-bottom: 4px; }
+.steps p { color: var(--ink-2); font-size: 14.5px; }
+.faq { max-width: 760px; margin: 26px auto 0; display: grid; gap: 10px; }
+details { padding: 16px 18px; }
+summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::after { content: "+"; color: var(--ink-3); font-weight: 400; font-size: 20px; line-height: 1; }
+details[open] summary::after { content: "–"; }
+details p { color: var(--ink-2); margin-top: 8px; font-size: 14.5px; }
+.final { margin: 64px 0 40px; padding: 40px 22px; text-align: center; }
+.final h2 { margin-bottom: 10px; }
+footer { border-top: 1px solid var(--line); padding: 22px 0 34px; color: var(--ink-3); font-size: 13px; }
+footer .wrap { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 860px) {
+  .feat, .feat:nth-of-type(even) { grid-template-columns: 1fr; }
+  .feat:nth-of-type(even) .copy { order: 0; }
+  .mini { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .hero { padding-top: 40px; }
+  .proof { grid-template-columns: 1fr; }
+  .proof div { padding: 14px; }
+  .mini { grid-template-columns: 1fr; }
+  nav .btn.small span { display: none; }
+  .brand small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="logo.svg" alt=""><span>Creator<small>Dashboard</small></span></a>
+    <div class="spacer"></div>
+    <a class="btn small join" href="#join">Join <span>the waitlist</span></a>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero wrap">
+    <span class="eyebrow">For YouTube and Instagram creators</span>
+    <h1>Your channel at a glance, <em>the moment your laptop wakes up</em></h1>
+    <p class="lead">A glass desktop dashboard that shows which videos actually brought you subscribers, what's trending in your niche, and how close you are to monetisation, without opening five tabs.</p>
+    <div class="cta-row">
+      <a class="btn join" href="#join">Join the waitlist, it's free</a>
+      <a class="btn ghost" href="#features">See what it does</a>
+    </div>
+    <p class="fine">One email when it's ready. No spam, unsubscribe anytime.</p>
+    <div class="glass shot"><span class="demo">Demo data</span><img src="img/dashboard.webp" alt="The Creator Dashboard showing a demo channel: subscribers, views, uploads, earnings, a milestone ring, a recent uploads chart, Instagram stats and latest videos" width="1600" height="844"></div>
+  </header>
+
+  <div class="wrap">
+    <div class="proof">
+      <div class="glass"><b class="g">+765</b><span>subscribers traced to a single Short</span></div>
+      <div class="glass"><b>20</b><span>trends matched to one channel's topics today</span></div>
+      <div class="glass"><b class="y">1 click</b><span>from "how's my channel doing?" to the answer</span></div>
+    </div>
+    <p class="sub" style="font-size:13.5px">These three are real results from TheCuriousMinute, the channel it was built for. Screenshots on this page use a demo channel.</p>
+  </div>
+
+  <section id="features" class="wrap">
+    <h2>Built around the questions creators actually ask</h2>
+    <p class="sub">Not another analytics tab. Just the four things you check every day, on one glass screen.</p>
+
+    <div class="glass feat">
+      <div class="copy">
+        <span class="tag">Every video, decoded</span>
+        <h3>Which video got you subscribers?</h3>
+        <p>Click any upload to see what it really did for your channel.</p>
+        <ul>
+          <li>Subscribers gained, and how many views each one took</li>
+          <li>Average view duration and how much people watched</li>
+          <li>How it compares to your typical video</li>
+        </ul>
+      </div>
+      <div class="pic"><span class="demo">Demo data</span><img src="img/video.webp" alt="Demo data: a video's stats panel: views, likes, subscribers gained, average view duration and watch time" loading="lazy" width="1600" height="844"></div>
+    </div>
+
+    <div class="glass feat">
+      <div class="copy">
+        <span class="tag">Trending for you</span>
+        <h3>Trends that fit your niche, not everyone's</h3>
+        <p>It learns your topics from your own best videos, then ranks what's rising on YouTube, Google and Instagram by how well it fits.</p>
+        <ul>
+          <li>A fit score and the topics each trend matched</li>
+          <li>A ready-to-film idea for every trend</li>
+        </ul>
+      </div>
+      <div class="pic"><span class="demo">Demo data</span><img src="img/trends.webp" alt="The Trending for you panel listing trends with fit scores, matched topics and video ideas" loading="lazy" width="1600" height="844"></div>
+    </div>
+
+    <div class="glass feat">
+      <div class="copy">
+        <span class="tag">Monetisation</span>
+        <h3>Know exactly how far you are from the Partner Program</h3>
+        <p>Exact Shorts views and watch hours against YouTube's thresholds, plus what your views could earn once you're in, clearly marked as potential until you are.</p>
+      </div>
+      <div class="pic"><span class="demo">Demo data</span><img src="img/earnings.webp" alt="Demo data: the Earnings panel with an earnings estimate and Partner Program progress" loading="lazy" width="1600" height="844"></div>
+    </div>
+
+    <div class="mini">
+      <div class="glass"><span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg></span><b>Opens at login</b><p>Ready a minute after you sign in. No apps to remember.</p></div>
+      <div class="glass"><span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><b>Light on your laptop</b><p>No background apps. Refreshes every 6 hours in seconds.</p></div>
+      <div class="glass"><span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><b>Private by design</b><p>Runs on your computer with read-only access. Your keys never leave it.</p></div>
+      <div class="glass"><span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 5.5L20 9l-4.5 3.8L17 19l-5-3-5 3 1.5-6.2L4 9l5.8-.5z"/></svg></span><b>One-click AI assistant</b><p>A big button to open your AI assistant when inspiration strikes.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>How early access works</h2>
+    <div class="steps">
+      <div class="glass"><b>Join the waitlist</b><p>Leave your email and your channel. Takes 20 seconds.</p></div>
+      <div class="glass"><b>Get the starter kit</b><p>First invites get the YouTube version with a short setup video. About 10 minutes, no coding.</p></div>
+      <div class="glass"><b>Shape what's next</b><p>Early users vote on features: Instagram, TikTok, Mac support.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Questions</h2>
+    <div class="faq">
+      <details class="glass"><summary>Is it free?</summary><p>Early access is free. If a paid version comes later, waitlist members get the best deal.</p></details>
+      <details class="glass"><summary>What do I need?</summary><p>A Windows 10 or 11 laptop and a YouTube channel. Mac support is on the list; tell us in the form if you need it.</p></details>
+      <details class="glass"><summary>Is my channel data safe?</summary><p>The dashboard runs on your own computer and only reads your stats. It can't post, delete or change anything, and your keys are never uploaded anywhere.</p></details>
+      <details class="glass"><summary>Does it work with Instagram?</summary><p>Yes, but Meta's setup takes longer, so the Instagram add-on comes after the YouTube starter kit.</p></details>
+      <details class="glass"><summary>Do I need to be monetised?</summary><p>No. It's built for growing channels too, and it shows exactly how close you are to the Partner Program.</p></details>
+    </div>
+  </section>
+
+  <div class="wrap" id="join">
+    <div class="glass final">
+      <h2>Get your channel on one glass screen</h2>
+      <p class="sub" style="margin-bottom:22px">Join the waitlist and be first to try it.</p>
+      <a class="btn join" href="#join">Join the waitlist</a>
+      <p class="fine">Opens a short form: email, channel link, and what you'd love to see.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Made by the creator of TheCuriousMinute</span>
+    <a href="https://www.youtube.com/@thecuriousminutein" target="_blank" rel="noopener">YouTube</a>
+    <a href="https://www.instagram.com/curiousminute.daily/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</footer>
+
+<script>
+  // Paste the Google Form (or Tally) link here. Every "Join" button opens it.
+  const WAITLIST_URL = 'https://forms.gle/DF9td1Gab9ML4C5r9';
+  if (!WAITLIST_URL.startsWith('PASTE')) {
+    document.querySelectorAll('a.join').forEach(a => { a.href = WAITLIST_URL; a.target = '_blank'; a.rel = 'noopener'; });
+  }
+</script>
+</body>
+</html>
